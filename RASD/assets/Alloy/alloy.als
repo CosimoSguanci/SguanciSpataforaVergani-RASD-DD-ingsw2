@@ -1,4 +1,6 @@
-abstract sig User{}
+abstract sig User{
+	userStatus: one UserStatus
+}
 sig AppUser extends User{}
 sig TicketMachineUser extends User{}
 sig CallCenterUser extends User{}
@@ -11,11 +13,12 @@ sig Time{}
 abstract sig Reservation{
 	code: one Code,
 	date: one Date,
+	res: User -> one GroceryShop,
+	queueNumber: lone Code, 	//number present in the display shown only for TicketMachine users
+	ticketMachineReservation: lone TicketMachine	//TM used for a reservation
 //	status: one ReservationStatus,
 //	user: one User,
 //	shop: one GroceryShop
-	res: User -> one GroceryShop,
-	queueNumber: lone Code 	//number present in the display shown only for TicketMachine users
 }{ 
 	#res = 1
 }
@@ -37,13 +40,18 @@ one sig NORMAL extends UserStatus{}
 abstract sig Status{}
 one sig PLANNED extends Status{}		//reserved, not yet used
 one sig EXPIRED extends Status{}		//time over
-one sig ACTIVE extends Status{}		//user is inside the shop
+one sig ACTIVE extends Status{}			//user is inside the shop
 
 sig ReservationStatus{
 	resStatus: Reservation -> one Status
 }{
 	#resStatus = 1
 }
+
+sig TicketMachine {
+	shop: one GroceryShop
+}
+
 
 
 //FUNCTIONS
@@ -58,8 +66,18 @@ fun getActiveReservations [reservations: set Reservation]: set Reservation {
 	((resStatus.ACTIVE).reservations).(resStatus.ACTIVE)
 }
 
+//retrieves all the PLANNED reservations given a set of Reservations as parameter
+fun getPlannedReservations [reservations: set Reservation]: set Reservation {
+	((resStatus.PLANNED).reservations).(resStatus.PLANNED)
+}
+
 //retrieves all the Tickets associated to a User
 fun getUserTickets [u: User]: set Ticket {
+	(res.GroceryShop).u
+}
+
+//retrieves all the Reservations associated to a User
+fun getUserReservations [u: User]: set Reservation {
 	(res.GroceryShop).u
 }
 
@@ -67,6 +85,7 @@ fun getUserTickets [u: User]: set Ticket {
 fun getPlannedTickets [tickets: set Ticket]: set Ticket {
 	((resStatus.PLANNED).tickets).(resStatus.PLANNED)
 }
+
 
 
 //FACTS
@@ -113,6 +132,42 @@ fact uniqueQueueNumber {
 		r1.queueNumber = r2.queueNumber and
 		User.(r1.res) = User.(r2.res)
 }
+
+//Blocked users cannot have any ACTIVE reservation
+fact noMoreTicketForBlockedUser {
+	no u: User | u.userStatus = BLOCKED and 
+		(#getActiveReservations[getUserReservations[u]] > 0)
+}
+
+//Blocked users cannot have any PLANNED reservation
+fact noMoreTicketForBlockedUser {
+	no u: User | u.userStatus = BLOCKED and 
+		(#getPlannedReservations[getUserReservations[u]] > 0)
+}
+
+//TicketMachine users cannot be blocked
+fact noBlockedTicketMachineUsers {
+	no tmu: TicketMachineUser | tmu.userStatus = BLOCKED
+}
+
+//AppUsers can book just a single visit per day
+fact onlyOneVisitForAppUserInADay {
+	all au: AppUser | no disj v1, v2 : Visit |
+		v1.date = v2.date and v1.(res.GroceryShop) = au and v2.(res.GroceryShop) = au
+}
+
+//CallCenterUsers can book just a single visit per day
+fact onlyOneVisitForCallCenterUserInADay {
+	all ccu: CallCenterUser | no disj v1, v2 : Visit |
+		v1.date = v2.date and v1.(res.GroceryShop) = ccu and v2.(res.GroceryShop) = ccu
+}
+
+//TicketMachine reservation are valid only for the same shop of the TicketMachine
+fact sameShopForTicketMachineReservations {
+	all tmu: TicketMachineUser, r : Reservation |
+		tmu.(r.res) = r.ticketMachineReservation.shop
+}
+
 
 //PREDICATES
 pred show {}
