@@ -91,6 +91,16 @@ fact justATicketPerAppUser {
 		)
 }
 
+//The number of PLANNED ticket for every CallCenterUser is 0 or 1.
+fact justATicketPerCallCenterUser {
+	all ccu: CallCenterUser | 
+		(let userTicket = getUserTickets[ccu] |
+			(let userPlannedTicket = getPlannedTickets[userTicket] |
+				#userPlannedTicket <= 1
+			)
+		)
+}
+
 //It is not possible that two different tickets have same code
 fact uniqueCodeForReservation {
 	no disj r1, r2: Reservation | r1.code = r2.code
