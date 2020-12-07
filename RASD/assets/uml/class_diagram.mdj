@@ -1069,11 +1069,12 @@
 											"_parent": {
 												"$ref": "AAAAAAF2Bppj0z1Kou8="
 											},
-											"visible": false,
 											"font": "Arial;13;0",
-											"left": 2272,
-											"top": 720,
-											"height": 13
+											"left": 1197,
+											"top": 413,
+											"width": 103,
+											"height": 13,
+											"text": "«abstract»"
 										},
 										{
 											"_type": "LabelView",
@@ -1083,7 +1084,7 @@
 											},
 											"font": "Arial;13;1",
 											"left": 1197,
-											"top": 415,
+											"top": 428,
 											"width": 103,
 											"height": 13,
 											"text": "Reservation"
@@ -1120,7 +1121,7 @@
 									"left": 1192,
 									"top": 408,
 									"width": 113,
-									"height": 25,
+									"height": 38,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAF2Bppj0z1L7Ao="
 									},
@@ -1155,7 +1156,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1197,
-											"top": 438,
+											"top": 451,
 											"width": 103,
 											"height": 13,
 											"text": "code",
@@ -1172,7 +1173,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1197,
-											"top": 453,
+											"top": 466,
 											"width": 103,
 											"height": 13,
 											"text": "date",
@@ -1189,7 +1190,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1197,
-											"top": 468,
+											"top": 481,
 											"width": 103,
 											"height": 13,
 											"text": "groceryShop",
@@ -1198,7 +1199,7 @@
 									],
 									"font": "Arial;13;0",
 									"left": 1192,
-									"top": 433,
+									"top": 446,
 									"width": 113,
 									"height": 53
 								},
@@ -1213,7 +1214,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 1192,
-									"top": 486,
+									"top": 499,
 									"width": 113,
 									"height": 10
 								},
@@ -5431,6 +5432,7 @@
 							}
 						}
 					],
+					"stereotype": "abstract",
 					"attributes": [
 						{
 							"_type": "UMLAttribute",
