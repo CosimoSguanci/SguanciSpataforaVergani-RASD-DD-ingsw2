@@ -212,6 +212,20 @@ fact singleUserCannotHaveMoreThanOneActiveReservation {
 		(r1.res).GroceryShop = (r2.res).GroceryShop		
 }
 
+//There is just a Reservation Status for each Reservation
+fact singleReservationStatusForAReservation {
+	no disj rs1, rs2: ReservationStatus |
+		(rs1.resStatus).Status = (rs2.resStatus).Status
+}
+
+//A single user cannot have more than 1 active or planned reservation for a single day
+fact noMultiplePlannedOrActiveReservationForAUserInSingleDay {
+	all disj r1, r2: Reservation |
+		((r1.date = r2.date) and ((r1.res).GroceryShop = (r2.res).GroceryShop)) 
+		implies ( (r1.(ReservationStatus.resStatus) = EXPIRED) 
+					or (r2.(ReservationStatus.resStatus) = EXPIRED))
+}
+
 
 
 
@@ -219,7 +233,7 @@ fact singleUserCannotHaveMoreThanOneActiveReservation {
 /////////////////////////PREDICATES///////////////////////////
 /////////////////////////////////////////////////////////////
 
-
+//This predicate proves that it is not possible to have more than #capacity inside the shop (ACTIVE reservations)
 pred moreActiveReservationThanShopCapacity (u1: User, u2: User, 
 											r1: Reservation, r2: Reservation, 
 											rStatus1: ReservationStatus, rStatus2: ReservationStatus, 
@@ -229,14 +243,33 @@ pred moreActiveReservationThanShopCapacity (u1: User, u2: User,
 	u2.(r2.res) = g
 	r1.(rStatus1.resStatus) = ACTIVE
 	r2.(rStatus2.resStatus) = ACTIVE
+	r1 != r2
+}
+
+//This predicate show a possible model for a single GroceryShop, single User and single Reservation scenario
+pred singleShopSingleUserReservation {
+	#GroceryShop = 1
+	#User = 1
+	#Reservation = 1
+}
+
+//This predicate shows that a TicketMachine belongs to 
+pred eachTicketMachineBelongToSingleGroceryShop {
+	#GroceryShop = 4
+	#TicketMachine = 7 //REMEMBER TO RUN AT LEAST FOR 7 
+}
+
+//More reservation for a single User: just ONE can be ACTIVE, just one can be a Ticket
+pred moreReservationsForSingleUser {
+	#Reservation = 6
+	#AppUser = 1
+	#TicketMachineUser = 0
+	#CallCenterUser = 0
+	#Date = 1
+	#TicketMachine = 1
+	#GroceryShop = 1
 	
 }
 
-pred prova {
-	#GroceryShop = 3
-	#TicketMachine = 7
-	#Visit = 7
-	#ACTIVE = 1
-}
 
-run prova for 10
+run moreReservationsForSingleUser for 7
