@@ -1,5 +1,9 @@
+//////////////////////////////////////////////////////////////////
+//////////////////////////SIGNATURES///////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 abstract sig User{
-	userStatus: one UserStatus
+	userStatus: UserStatus
 }
 sig AppUser extends User{}
 sig TicketMachineUser extends User{}
@@ -8,12 +12,16 @@ sig CallCenterUser extends User{}
 sig Date{} //add day, month, year attributes ONLY IF used in assertions
 sig Position{} //add GPS latitude and longitude IF used in assertions
 
-sig Time{}
+sig Time{
+	hour: Int,
+	min: Int
+}
 
 abstract sig Reservation{
-	code: one Code,
-	date: one Date,
-	res: User -> one GroceryShop,
+	code: Code,
+	date: Date,
+	time: Time,
+	res: User -> GroceryShop,
 	queueNumber: lone Code, 	//number present in the display shown only for TicketMachine users
 	ticketMachineReservation: lone TicketMachine	//TM used for a reservation
 //	status: one ReservationStatus,
@@ -26,11 +34,16 @@ sig Visit extends Reservation {}
 sig Ticket extends Reservation {}
 
 sig GroceryShop {
-	capacity: one Int
+	capacity: Int,
+	openingHour: Time,
+	closingHour: Time
+}{
+	//Shops are open for a considerable time
+	openingHour.hour < closingHour.hour 
 }
 
 sig Code {
-	id: one String
+	id: Int
 }
 
 abstract sig UserStatus{}
@@ -43,18 +56,21 @@ one sig EXPIRED extends Status{}		//time over
 one sig ACTIVE extends Status{}			//user is inside the shop
 
 sig ReservationStatus{
-	resStatus: Reservation -> one Status
+	resStatus: Reservation -> Status
 }{
 	#resStatus = 1
 }
 
 sig TicketMachine {
-	shop: one GroceryShop
+	shop: GroceryShop
 }
 
 
 
-//FUNCTIONS
+
+////////////////////////////////////////////////////////////////
+/////////////////////////FUNCTIONS//////////////////////////////
+///////////////////////////////////////////////////////////////
 
 //retrieves all the reservations for a given grogecyShop 
 fun getShopReservations [g : GroceryShop]: set Reservation {
@@ -88,7 +104,10 @@ fun getPlannedTickets [tickets: set Ticket]: set Ticket {
 
 
 
-//FACTS
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////FACTS////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 //The number of active reservations is always less than the maximum capacity of the shop
 fact activeReservationsLowerThanCapacity {
@@ -168,15 +187,56 @@ fact sameShopForTicketMachineReservations {
 		tmu.(r.res) = r.ticketMachineReservation.shop
 }
 
+//Reservation can be only for shops' opening hours 
+fact reserveForOpeningHours {
+	all r: Reservation | 
+		(let g = User.(r.res) | 
+			((r.time.hour > g.openingHour.hour) and (r.time.hour < g.closingHour.hour))
+			or ((r.time.hour = g.openingHour.hour) and (r.time.min >= g.openingHour.min))
+			or ((r.time.hour = g.closingHour.hour) and (r.time.min < g.closingHour.min))
+		)
+}
 
-//PREDICATES
-pred show {}
+//Every GroceryShop has at least a TicketMachine
+fact atLeastATicketMachineForEachShop { 
+	no g: GroceryShop |
+		no tm: TicketMachine |
+			tm.shop = g
+}
 
-run show for 10
+//A signle user cannot have more than one active reservation
+fact singleUserCannotHaveMoreThanOneActiveReservation {
+	no disj r1, r2: Reservation |
+		r1.(ReservationStatus.resStatus) = ACTIVE and
+		r2.(ReservationStatus.resStatus) = ACTIVE and
+		(r1.res).GroceryShop = (r2.res).GroceryShop		
+}
 
 
 
 
+//////////////////////////////////////////////////////////////
+/////////////////////////PREDICATES///////////////////////////
+/////////////////////////////////////////////////////////////
 
 
+pred moreActiveReservationThanShopCapacity (u1: User, u2: User, 
+											r1: Reservation, r2: Reservation, 
+											rStatus1: ReservationStatus, rStatus2: ReservationStatus, 
+											g: GroceryShop) {
+	g.capacity = 1
+	u1.(r1.res) = g
+	u2.(r2.res) = g
+	r1.(rStatus1.resStatus) = ACTIVE
+	r2.(rStatus2.resStatus) = ACTIVE
+	
+}
 
+pred prova {
+	#GroceryShop = 3
+	#TicketMachine = 7
+	#Visit = 7
+	#ACTIVE = 1
+}
+
+run prova for 10
