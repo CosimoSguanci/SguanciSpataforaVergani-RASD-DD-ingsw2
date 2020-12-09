@@ -10,7 +10,6 @@ sig TicketMachineUser extends User{}
 sig CallCenterUser extends User{}
 
 sig Date{} //add day, month, year attributes ONLY IF used in assertions
-sig Position{} //add GPS latitude and longitude IF used in assertions
 
 sig Time{
 	hour: Int,
@@ -27,9 +26,9 @@ abstract sig Reservation{
 //	status: one ReservationStatus,
 //	user: one User,
 //	shop: one GroceryShop
-}{ 
-	#res = 1
-}
+}//{ 
+	//#res = 1
+//}
 sig Visit extends Reservation {}
 sig Ticket extends Reservation {}
 
@@ -226,6 +225,12 @@ fact noMultiplePlannedOrActiveReservationForAUserInSingleDay {
 					or (r2.(ReservationStatus.resStatus) = EXPIRED))
 }
 
+//Every Reservation has only a single Status associated to it
+fact everyReservationHasJustOneStatus {
+	all r: Reservation |
+		#r.(ReservationStatus.resStatus) = 1
+}
+
 
 
 
@@ -233,30 +238,24 @@ fact noMultiplePlannedOrActiveReservationForAUserInSingleDay {
 /////////////////////////PREDICATES///////////////////////////
 /////////////////////////////////////////////////////////////
 
-//This predicate proves that it is not possible to have more than #capacity inside the shop (ACTIVE reservations)
-pred moreActiveReservationThanShopCapacity (u1: User, u2: User, 
-											r1: Reservation, r2: Reservation, 
-											rStatus1: ReservationStatus, rStatus2: ReservationStatus, 
-											g: GroceryShop) {
-	g.capacity = 1
-	u1.(r1.res) = g
-	u2.(r2.res) = g
-	r1.(rStatus1.resStatus) = ACTIVE
-	r2.(rStatus2.resStatus) = ACTIVE
-	r1 != r2
-}
-
-//This predicate show a possible model for a single GroceryShop, single User and single Reservation scenario
+//This predicate shows a possible model for a single GroceryShop, single User and single Reservation scenario
 pred singleShopSingleUserReservation {
 	#GroceryShop = 1
 	#User = 1
 	#Reservation = 1
 }
 
-//This predicate shows that a TicketMachine belongs to 
+//This predicate shows that a TicketMachine belongs to a GroceryShop
 pred eachTicketMachineBelongToSingleGroceryShop {
-	#GroceryShop = 4
-	#TicketMachine = 7 //REMEMBER TO RUN AT LEAST FOR 7 
+	#GroceryShop = 3
+	#TicketMachine = 5	//REMEMBER TO RUN AT LEAST FOR 7 
+	#Ticket = 0
+	#Visit = 0
+	#Code = 0
+	#User = 0
+	#Time = 2
+	#Date = 0
+	#Reservation = 0
 }
 
 //More reservation for a single User: just ONE can be ACTIVE, just one can be a Ticket
@@ -268,8 +267,44 @@ pred moreReservationsForSingleUser {
 	#Date = 1
 	#TicketMachine = 1
 	#GroceryShop = 1
-	
+}
+
+//This predicate proves that it is not possible to have more than #capacity inside the shop (ACTIVE reservations)
+pred moreActiveReservationThanShopCapacity (u1: User, u2: User, 
+											r1: Reservation, r2: Reservation, 
+											rStatus1: ReservationStatus, rStatus2: ReservationStatus, 
+											g: GroceryShop) {
+//INSTANCE FOUND:
+//By simply changing g.capacity (2 or more) it will correctly found an instance
+	g.capacity = 1
+	u1.(r1.res) = g
+	u2.(r2.res) = g
+	r1.(rStatus1.resStatus) = ACTIVE
+	r2.(rStatus2.resStatus) = ACTIVE
+	r1 != r2
+}
+
+//Blocked users cannot have Planned or Active Reservations
+pred blockedUsersCannotHavePlannedOrActiveReservations (u1, u2: User,
+								r1, r2, r3, r4, r5: Reservation) {
+	u1.userStatus = NORMAL
+	u2.userStatus = BLOCKED
+	r1.(ReservationStatus.resStatus) = ACTIVE
+	r2.(ReservationStatus.resStatus) = ACTIVE
+	r3.(ReservationStatus.resStatus) = PLANNED
+	r4.(ReservationStatus.resStatus) = PLANNED
+	r5.(ReservationStatus.resStatus) = EXPIRED
+	#Reservation = 5
+	#GroceryShop = 1
+	#TicketMachine = 1
+	#Time = 2
+	#Code = 5
+	#User = 3 		
+	//NO INSTANCE FOUND:	
+	//#User = 2 shows a counterexample: 1 user blocked, 
+	//the other one cannot have more than an active reservation
+	r1 != r2 and r3 != r4
 }
 
 
-run moreReservationsForSingleUser for 7
+run blockedUsersCannotHavePlannedOrActiveReservations for 5
