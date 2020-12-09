@@ -211,12 +211,6 @@ fact singleUserCannotHaveMoreThanOneActiveReservation {
 		(r1.res).GroceryShop = (r2.res).GroceryShop		
 }
 
-//There is just a Reservation Status for each Reservation
-fact singleReservationStatusForAReservation {
-	no disj rs1, rs2: ReservationStatus |
-		(rs1.resStatus).Status = (rs2.resStatus).Status
-}
-
 //A single user cannot have more than 1 active or planned reservation for a single day
 fact noMultiplePlannedOrActiveReservationForAUserInSingleDay {
 	all disj r1, r2: Reservation |
