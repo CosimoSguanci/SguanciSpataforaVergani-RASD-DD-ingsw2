@@ -168,6 +168,7 @@ fact noBlockedTicketMachineUsers {
 	no tmu: TicketMachineUser | tmu.userStatus = BLOCKED
 }
 
+/*
 //AppUsers can book just a single visit per day
 fact onlyOneVisitForAppUserInADay {
 	all au: AppUser | no disj v1, v2 : Visit |
@@ -179,6 +180,7 @@ fact onlyOneVisitForCallCenterUserInADay {
 	all ccu: CallCenterUser | no disj v1, v2 : Visit |
 		v1.date = v2.date and v1.(res.GroceryShop) = ccu and v2.(res.GroceryShop) = ccu
 }
+*/
 
 //TicketMachine reservation are valid only for the same shop of the TicketMachine
 fact sameShopForTicketMachineReservations {
@@ -280,20 +282,22 @@ pred moreActiveReservationThanShopCapacity (u1: User, u2: User,
 
 //Blocked users cannot have Planned or Active Reservations
 pred blockedUsersCannotHavePlannedOrActiveReservations (u1, u2: User,
-								r1, r2, r3, r4, r5: Reservation) {
+								v1, v2, v3, v4, v5: Visit) {
 	u1.userStatus = NORMAL
 	u2.userStatus = BLOCKED
-	r1.(ReservationStatus.resStatus) = ACTIVE
-	r2.(ReservationStatus.resStatus) = ACTIVE
-	r3.(ReservationStatus.resStatus) = PLANNED
-	r4.(ReservationStatus.resStatus) = PLANNED
-	r5.(ReservationStatus.resStatus) = EXPIRED
-	#Reservation = 5
+	v1.(ReservationStatus.resStatus) = EXPIRED				//We ran it twice
+	v2.(ReservationStatus.resStatus) = EXPIRED
+	v3.(ReservationStatus.resStatus) = PLANNED
+	v4.(ReservationStatus.resStatus) = EXPIRED
+	v5.(ReservationStatus.resStatus) = EXPIRED
+	#Visit = 5
+	#Ticket = 0
 	#GroceryShop = 1
 	#TicketMachine = 1
 	#Time = 2
 	#Code = 5
-	#User = 3 		
+	#User = 2
+	#Date = 1	
 	//NO INSTANCE FOUND:	
 	//#User = 2 shows a counterexample: 1 user blocked, 
 	//the other one cannot have more than an active reservation
