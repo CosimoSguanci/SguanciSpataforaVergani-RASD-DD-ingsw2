@@ -301,8 +301,9 @@ pred blockedUsersCannotHavePlannedOrActiveReservations (u1, u2: User,
 	//NO INSTANCE FOUND:	
 	//#User = 2 shows a counterexample: 1 user blocked, 
 	//the other one cannot have more than an active reservation
-	r1 != r2 and r3 != r4
+	v1 != v2 and v3 != v4
 }
 
 
-run blockedUsersCannotHavePlannedOrActiveReservations for 5
+//run blockedUsersCannotHavePlannedOrActiveReservations for 5
+run moreReservationsForSingleUser  for 6
