@@ -283,13 +283,13 @@ pred moreActiveReservationThanShopCapacity (u1: User, u2: User,
 //Blocked users cannot have Planned or Active Reservations
 pred blockedUsersCannotHavePlannedOrActiveReservations (u1, u2: User,
 								v1, v2, v3, v4, v5: Visit) {
-	u1.userStatus = NORMAL
-	u2.userStatus = BLOCKED
-	v1.(ReservationStatus.resStatus) = EXPIRED				//We ran it twice
+	u1.userStatus = BLOCKED
+	u2.userStatus = NORMAL
+	v1.(ReservationStatus.resStatus) = EXPIRED			
 	v2.(ReservationStatus.resStatus) = EXPIRED
-	v3.(ReservationStatus.resStatus) = PLANNED
+	v3.(ReservationStatus.resStatus) = ACTIVE
 	v4.(ReservationStatus.resStatus) = EXPIRED
-	v5.(ReservationStatus.resStatus) = EXPIRED
+	v5.(ReservationStatus.resStatus) = PLANNED
 	#Visit = 5
 	#Ticket = 0
 	#GroceryShop = 1
@@ -297,13 +297,14 @@ pred blockedUsersCannotHavePlannedOrActiveReservations (u1, u2: User,
 	#Time = 2
 	#Code = 5
 	#User = 2
-	#Date = 1	
+	#Date = 2
 	//NO INSTANCE FOUND:	
 	//#User = 2 shows a counterexample: 1 user blocked, 
 	//the other one cannot have more than an active reservation
 	v1 != v2 and v3 != v4
+	u1 != u2
 }
 
 
 //run blockedUsersCannotHavePlannedOrActiveReservations for 5
-run moreReservationsForSingleUser  for 6
+run blockedUsersCannotHavePlannedOrActiveReservations  for 5
