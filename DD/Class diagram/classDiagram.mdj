@@ -3358,6 +3358,7 @@
 									"model": {
 										"$ref": "AAAAAAF2Br6lNXZUcqU="
 									},
+									"visible": false,
 									"font": "Arial;13;0",
 									"left": 840,
 									"top": 487,
@@ -3401,17 +3402,18 @@
 									"model": {
 										"$ref": "AAAAAAF2Br6lNXZUcqU="
 									},
-									"visible": false,
 									"font": "Arial;13;0",
-									"left": 876,
+									"left": 867,
 									"top": 484,
+									"width": 19.5126953125,
 									"height": 13,
 									"alpha": -0.5235987755982988,
 									"distance": 25,
 									"hostEdge": {
 										"$ref": "AAAAAAF2Br6lNnZX7LI="
 									},
-									"edgePosition": 2
+									"edgePosition": 2,
+									"text": "0..*"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -4969,6 +4971,7 @@
 									"model": {
 										"$ref": "AAAAAAF2Br6lNXZUcqU="
 									},
+									"visible": false,
 									"font": "Arial;13;0",
 									"left": 209,
 									"top": 455,
@@ -5012,17 +5015,18 @@
 									"model": {
 										"$ref": "AAAAAAF2Br6lNXZUcqU="
 									},
-									"visible": false,
 									"font": "Arial;13;0",
-									"left": 245,
+									"left": 236,
 									"top": 452,
+									"width": 19.5126953125,
 									"height": 13,
 									"alpha": -0.5235987755982988,
 									"distance": 25,
 									"hostEdge": {
 										"$ref": "AAAAAAF2hxdzy6E0q2M="
 									},
-									"edgePosition": 2
+									"edgePosition": 2,
+									"text": "0..*"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -5243,6 +5247,7 @@
 									"model": {
 										"$ref": "AAAAAAF2Br6lNXZUcqU="
 									},
+									"visible": false,
 									"font": "Arial;13;0",
 									"left": 284,
 									"top": 514,
@@ -5286,17 +5291,18 @@
 									"model": {
 										"$ref": "AAAAAAF2Br6lNXZUcqU="
 									},
-									"visible": false,
 									"font": "Arial;13;0",
-									"left": 296,
+									"left": 287,
 									"top": 541,
+									"width": 19.5126953125,
 									"height": 13,
 									"alpha": -0.5235987755982988,
 									"distance": 25,
 									"hostEdge": {
 										"$ref": "AAAAAAF2hxj7AqvSHwU="
 									},
-									"edgePosition": 2
+									"edgePosition": 2,
+									"text": "0..*"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -6204,10 +6210,10 @@
 								"_parent": {
 									"$ref": "AAAAAAF2Br6lNXZTLB0="
 								},
-								"name": "1",
 								"reference": {
 									"$ref": "AAAAAAF2BrMIaFrUqCc="
-								}
+								},
+								"multiplicity": "0..*"
 							},
 							"end2": {
 								"_type": "UMLAssociationEnd",
